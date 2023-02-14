@@ -1,3 +1,27 @@
+ffunction ParticleTable(props) {
+  return (
+    <MaterialUI.TableContainer component={MaterialUI.Paper}>
+      <MaterialUI.Table sx={{ minWidth: 650 }} aria-label="particle table">
+        <MaterialUI.TableHead>
+          <MaterialUI.TableRow>
+            <MaterialUI.TableCell>Name</MaterialUI.TableCell>
+            <MaterialUI.TableCell align="left">Mass&nbsp;(MeV)</MaterialUI.TableCell>
+            <MaterialUI.TableCell align="left">Width</MaterialUI.TableCell>
+          </MaterialUI.TableRow>
+        </MaterialUI.TableHead>
+        <MaterialUI.TableBody>
+          <MaterialUI.TableRow>
+            <MaterialUI.TableCell>{props.particleName}</MaterialUI.TableCell>
+            <MaterialUI.TableCell align="left">{props.particleMass}</MaterialUI.TableCell>
+            <MaterialUI.TableCell align="left">{props.particleWidth}</MaterialUI.TableCell>
+          </MaterialUI.TableRow>
+        </MaterialUI.TableBody>
+      </MaterialUI.Table>
+    </MaterialUI.TableContainer>
+  );
+}
+
+
 function Heading(props) {
     return (
       <MaterialUI.Box sx={{ flexGrow: 1, mb: 2 }}>
@@ -6,14 +30,16 @@ function Heading(props) {
             <MaterialUI.Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Particle
             </MaterialUI.Typography>
-            <MaterialUI.Button href="https://github.com/scikit-hep/particle" color="inherit">
-              Source
+            <MaterialUI.Button href="https://github.com/scikit-hep/particle" color='inherit'>
+              <MaterialUI.Icon>code</MaterialUI.Icon>
             </MaterialUI.Button>
+            
           </MaterialUI.Toolbar>
         </MaterialUI.AppBar>
       </MaterialUI.Box>
     );
   }
+  
   
   async function prepare_pyodide() {
     const pyodide = await loadPyodide();
@@ -28,7 +54,7 @@ function Heading(props) {
   
   function MyThemeProvider(props) {
     const prefersDarkMode = MaterialUI.useMediaQuery("(prefers-color-scheme: dark)");
-  
+    
     const theme = React.useMemo(
       () =>
         MaterialUI.createTheme({
@@ -105,6 +131,9 @@ function Heading(props) {
             <MaterialUI.CssBaseline />
             <MaterialUI.Box>
               {this.props.header && <Heading />}
+              <MaterialUI.Container
+                maxWidth="md"
+              >
               <MaterialUI.Stack
                 direction="row"
                 spacing={2}
@@ -119,15 +148,27 @@ function Heading(props) {
                   autoFocus={true}
                   onInput={(e) => this.setState({ inputValue: e.target.value })}
                   sx={{ flexGrow: 3 }}
-                />
-                <MaterialUI.Button
-                  variant="contained"
-                  onClick={this.handleSubmit}
-                  sx={{ flexGrow: 1 }}
+                  InputProps={{
+                    startAdornment: (
+                      <MaterialUI.InputAdornment position="start">
+                        <MaterialUI.IconButton
+                          aria-label="search"
+                          onClick={this.handleSubmit}
+                        >
+                          <MaterialUI.Icon>search</MaterialUI.Icon>
+                        </MaterialUI.IconButton>
+                      </MaterialUI.InputAdornment>
+                    ),
+                  }}
+                  onKeyPress={(event) => {
+                    if (event.key === 'Enter') {
+                      this.handleSubmit();
+                    }
+                  }}
                 >
-                  Submit
-                </MaterialUI.Button>
+                </MaterialUI.TextField>
               </MaterialUI.Stack>
+              
               {this.state.err_msg && (
                 <MaterialUI.Box sx={{ m: 1}}>
                 <MaterialUI.Typography
@@ -140,30 +181,19 @@ function Heading(props) {
                 </MaterialUI.Typography>
                 </MaterialUI.Box>
               )}
+
               {this.state.outputValue && (
-                <MaterialUI.TableContainer component={MaterialUI.Paper}>
-                <MaterialUI.Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <MaterialUI.TableHead>
-                    <MaterialUI.TableRow>
-                      <MaterialUI.TableCell>Name</MaterialUI.TableCell>
-                      <MaterialUI.TableCell align="right">Mass&nbsp;(MeV)</MaterialUI.TableCell>
-                      <MaterialUI.TableCell align="right">Width</MaterialUI.TableCell>
-                    </MaterialUI.TableRow>
-                  </MaterialUI.TableHead>
-                  <MaterialUI.TableBody>
-                     <MaterialUI.TableRow>
-                        <MaterialUI.TableCell>{this.state.outputValue.name}</MaterialUI.TableCell>
-                        <MaterialUI.TableCell align="right">{this.state.outputValue.mass}</MaterialUI.TableCell>
-                        <MaterialUI.TableCell align="right">{this.state.outputValue.width}</MaterialUI.TableCell>
-                      </MaterialUI.TableRow>
-                  </MaterialUI.TableBody>
-                </MaterialUI.Table>
-              </MaterialUI.TableContainer>
-        )}
+                <ParticleTable particleName={this.state.outputValue.name} 
+                  particleMass={this.state.outputValue.mass} 
+                  particleWidth={this.state.outputValue.width} />
+              )}
+              </MaterialUI.Container>
             </MaterialUI.Box>
           </MyThemeProvider>
         );
       }
 }
+
+  
 
   
